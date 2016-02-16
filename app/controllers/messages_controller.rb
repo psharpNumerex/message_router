@@ -5,7 +5,14 @@ class MessagesController < ApplicationController
 
   def push_to_amq
     message = params[:message]
-    head :ok
+    begin
+      Pusher.push(message)
+      head :ok
+    rescue
+      Rails.logger.info $!
+      $@.each{|line| Rails.logger.info line}
+      head :internal_server_error
+    end
   end
 
 end
