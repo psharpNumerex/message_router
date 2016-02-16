@@ -4,15 +4,14 @@ class MessagesController < ApplicationController
 
 
   def push_to_amq
-    message = params[:message]
-    begin
-      Pusher.push(message)
-      head :ok
-    rescue
-      Rails.logger.info $!
-      $@.each{|line| Rails.logger.info line}
-      head :internal_server_error
-    end
+    message = params[:message].to_json
+    Rails.logger.info "#{Time.now.to_s(:db)} - message - #{message}"
+    Pusher.push(message)
+    head :ok
+  rescue
+    Rails.logger.info $!
+    $@.each{|line| Rails.logger.info line}
+    head :internal_server_error
   end
 
 end
